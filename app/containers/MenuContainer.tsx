@@ -4,19 +4,19 @@ import { setTab } from '../actions/menu';
 import Menu from '../components/Menu';
 
 type menuStateType = {
-  menu: number
+  menu: number;
 };
 
 function mapStateToProps(state: menuStateType) {
   return {
-    menu: state.menu,
+    menu: state.menu
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return bindActionCreators(
     {
-      setTab,
+      setTab
     },
     dispatch
   );

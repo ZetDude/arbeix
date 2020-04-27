@@ -7,10 +7,10 @@ type Props = {
 
 export default function App(props: Props) {
   const { children } = props;
-  return <>
-    <MenuContainer />
-      <div id="appContainer">
-        {children}
-      </div>
-    </>;
+  return (
+    <>
+      <MenuContainer />
+      <div id="appContainer">{children}</div>
+    </>
+  );
 }

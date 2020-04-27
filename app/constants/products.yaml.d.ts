@@ -1,4 +1,4 @@
 declare const schema: {
-  [content: string]: any,
+  [content: string]: any;
 };
 export = schema;

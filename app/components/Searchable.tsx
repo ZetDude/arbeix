@@ -2,47 +2,50 @@ import React, { Component, SyntheticEvent } from 'react';
 import trim from 'lodash/trim';
 
 type Option = {
-  value: string,
-  label: string,
+  value: string;
+  label: string;
 };
 
 type Props = {
   value?: string;
-  options: Option[],
-  placeholder?: string
-  notFoundText?: string
-  focused?: boolean
-  noInput?: boolean
-  arrow?: boolean
-  onSelect?: (arg0: any) => void
-}
+  options: Option[];
+  placeholder?: string;
+  notFoundText?: string;
+  focused?: boolean;
+  noInput?: boolean;
+  arrow?: boolean;
+  onSelect?: (arg0: any) => void;
+};
 
 type State = {
-  value: string,
-  selected: string,
-  options: Option[],
-  optionsValues: string[],
-  optionsLabels: string[],
-  optionsVisible: string[],
-  placeholder: string,
-  notFoundText: string,
-  focused: boolean,
-  preFocused: boolean,
-  arrowPosition: number,
-  noInput: boolean,
-  arrow: boolean,
-  assume?: string,
-}
+  value: string;
+  selected: string;
+  options: Option[];
+  optionsValues: string[];
+  optionsLabels: string[];
+  optionsVisible: string[];
+  placeholder: string;
+  notFoundText: string;
+  focused: boolean;
+  preFocused: boolean;
+  arrowPosition: number;
+  noInput: boolean;
+  arrow: boolean;
+  assume?: string;
+};
 
 export default class Searchable extends Component {
   state: State;
+
   list: any;
+
   input: any;
+
   props!: Props;
 
   constructor(props: Props) {
     super(props);
-    let value = props.value === '' || props.value ? props.value : false;
+    const value = props.value === '' || props.value ? props.value : false;
     this.state = {
       value,
       selected: value,
@@ -61,7 +64,7 @@ export default class Searchable extends Component {
       arrowPosition: -1,
       noInput: props.noInput || false,
       arrow: props.arrow || false,
-      assume: undefined,
+      assume: undefined
     } as State;
     this.onChange = this.onChange.bind(this);
     this.onBlur = this.onBlur.bind(this);
@@ -76,8 +79,8 @@ export default class Searchable extends Component {
   }
 
   findInitialValue() {
-    let { value, options } = this.state,
-      match: boolean | Option = false;
+    const { value, options } = this.state;
+    let match: boolean | Option = false;
     options.forEach(item => {
       if (!match) match = item.value === value ? item : false;
     });
@@ -107,9 +110,9 @@ export default class Searchable extends Component {
   }
 
   sort() {
-    let { value, optionsVisible } = this.state,
-      firsts = [],
-      seconds = [];
+    let { value, optionsVisible } = this.state;
+    let firsts = [];
+    let seconds = [];
     if (value) {
       optionsVisible = optionsVisible.sort((a, b) => {
         return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -134,24 +137,24 @@ export default class Searchable extends Component {
   }
 
   findAssumption() {
-    let { optionsVisible, value } = this.state,
-      assume = optionsVisible.find(item => {
-        return item.indexOf(value) === 0;
-      }),
-      assumeLower = optionsVisible.find(item => {
-        return item.toLowerCase().indexOf(value.toLowerCase()) === 0;
-      });
+    const { optionsVisible, value } = this.state;
+    const assume = optionsVisible.find(item => {
+      return item.indexOf(value) === 0;
+    });
+    const assumeLower = optionsVisible.find(item => {
+      return item.toLowerCase().indexOf(value.toLowerCase()) === 0;
+    });
     if (!assume && !assumeLower) return;
     this.setState({
-      assume: value ? (assume ? assume : assumeLower) : false
+      assume: value ? assume || assumeLower : false
     });
   }
 
   buildList(value: string) {
-    let { optionsLabels } = this.state,
-      optionsVisible = optionsLabels.filter(item => {
-        return item.toLowerCase().indexOf(value.toLowerCase()) >= 0;
-      });
+    const { optionsLabels } = this.state;
+    const optionsVisible = optionsLabels.filter(item => {
+      return item.toLowerCase().indexOf(value.toLowerCase()) >= 0;
+    });
     this.setState(
       {
         value,
@@ -168,7 +171,7 @@ export default class Searchable extends Component {
   }
 
   onChange(e: SyntheticEvent) {
-    let value = (e.target as HTMLTextAreaElement).value;
+    const { value } = e.target as HTMLTextAreaElement;
     if (!this.select(value)) this.buildList(value);
   }
 
@@ -187,7 +190,7 @@ export default class Searchable extends Component {
       } else {
         arrowPosition = 0;
       }
-      let assume = optionsVisible[arrowPosition];
+      const assume = optionsVisible[arrowPosition];
       value = assume.slice(0, value.length);
       this.setState(
         {
@@ -206,7 +209,7 @@ export default class Searchable extends Component {
       } else {
         arrowPosition--;
       }
-      let assume = optionsVisible[arrowPosition];
+      const assume = optionsVisible[arrowPosition];
       value = assume.slice(0, value.length);
       this.setState(
         {
@@ -220,17 +223,17 @@ export default class Searchable extends Component {
   }
 
   scrollList() {
-    let { list } = this,
-      { arrowPosition } = this.state,
-      target = '.searchable-list-item__' + arrowPosition;
+    const { list } = this;
+    const { arrowPosition } = this.state;
+    const target = `.searchable-list-item__${arrowPosition}`;
     if (list) {
-      let item = list.querySelector(target);
+      const item = list.querySelector(target);
       item && item.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 
   onFocus() {
-    let { optionsLabels, optionsVisible } = this.state;
+    const { optionsLabels, optionsVisible } = this.state;
     this.input && this.input.focus();
     this.setState({
       focused: true,
@@ -239,8 +242,8 @@ export default class Searchable extends Component {
   }
 
   onBlur() {
-    let { value, optionsLabels } = this.state,
-      match: boolean | string = false;
+    const { value, optionsLabels } = this.state;
+    let match: boolean | string = false;
     optionsLabels.forEach(item => {
       if (!match)
         match = item.toLowerCase() === value.toLowerCase() ? item : false;
@@ -248,27 +251,27 @@ export default class Searchable extends Component {
     this.setState({
       focused: false,
       optionsVisible: [],
-      value: match ? match : '',
+      value: match || '',
       assume: false,
       arrowPosition: -1
     });
   }
 
   select(value: string) {
-    let { optionsLabels, options, selected } = this.state,
-      newSelected =
-        optionsLabels.find(item => {
-          return item === value;
-        }) || '',
-      newSelectedLower =
-        optionsLabels.find(item => {
-          return item.toLowerCase() === value.toLowerCase();
-        }) || '';
-    newSelected = newSelected ? newSelected : newSelectedLower;
+    const { optionsLabels, options, selected } = this.state;
+    let newSelected =
+      optionsLabels.find(item => {
+        return item === value;
+      }) || '';
+    const newSelectedLower =
+      optionsLabels.find(item => {
+        return item.toLowerCase() === value.toLowerCase();
+      }) || '';
+    newSelected = newSelected || newSelectedLower;
     this.setState(
       {
         selected: newSelected,
-        value: newSelected ? newSelected : value,
+        value: newSelected || value,
         optionsVisible: [],
         focused: false,
         arrowPosition: -1,
@@ -288,7 +291,7 @@ export default class Searchable extends Component {
   }
 
   render() {
-    let {
+    const {
       value,
       optionsVisible,
       optionsLabels,
@@ -306,10 +309,11 @@ export default class Searchable extends Component {
     if (preFocused) {
       this.input && this.input.focus();
       this.state.focused = true;
-      this.state.optionsVisible = optionsVisible.length ? optionsVisible : optionsLabels;
+      this.state.optionsVisible = optionsVisible.length
+        ? optionsVisible
+        : optionsLabels;
       this.state.preFocused = false;
     }
-
 
     return (
       <div
@@ -317,7 +321,7 @@ export default class Searchable extends Component {
         onClick={e => {
           e.stopPropagation();
           e.nativeEvent.stopImmediatePropagation();
-          let action = !noInput
+          const action = !noInput
             ? this.onFocus
             : focused
             ? this.onBlur
@@ -373,9 +377,7 @@ export default class Searchable extends Component {
               }
             }}
           >
-            {arrow ? (
-              arrow
-            ) : (
+            {arrow || (
               <svg viewBox="0 0 330 330">
                 <path
                   d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
@@ -400,12 +402,12 @@ s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.3
                 <div
                   className={[
                     'searchable-list-item',
-                    'searchable-list-item__' + index,
+                    `searchable-list-item__${index}`,
                     item === selected ? 'searchable-list-item__active' : '',
                     arrowPosition >= 0 && index === arrowPosition
                       ? 'searchable-list-item__arrow-position'
                       : '',
-                    item.startsWith("^") ? 'searchable-list-item-bold' : ''
+                    item.startsWith('^') ? 'searchable-list-item-bold' : ''
                   ].join(' ')}
                   key={index}
                   onClick={e => {
@@ -424,7 +426,7 @@ s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.3
                       </svg>
                     </i>
                   )}
-                  {trim(item, "^")}
+                  {trim(item, '^')}
                 </div>
               );
             })

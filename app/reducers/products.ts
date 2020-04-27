@@ -1,14 +1,19 @@
-import { defaultProductStateTypeInternal, productStateTypeInternal, ProductTree } from './types';
 import { AnyAction } from 'redux';
+import Store from 'electron-store';
+import {
+  defaultProductStateTypeInternal,
+  productStateTypeInternal,
+  ProductTree
+} from './types';
 import { COMMIT, INPUT, NEW, UPDATE, LOAD } from '../actions/products';
 import { safeSet } from '../components/Products';
-import Store from 'electron-store';
+
 const yaml = require('js-yaml');
 
-type TreeEntry = Tree | number
+type TreeEntry = Tree | number;
 
 interface Tree {
-  [extraProps: string]: TreeEntry
+  [extraProps: string]: TreeEntry;
 }
 
 export const store = new Store({
@@ -18,7 +23,12 @@ export const store = new Store({
   deserialize: yaml.safeLoad
 });
 
-const failSet = (object: any, key: string, value: any, orElse: (obj: any) => void) => {
+const failSet = (
+  object: any,
+  key: string,
+  value: any,
+  orElse: (obj: any) => void
+) => {
   if (object[key] === undefined) {
     object[key] = value;
   } else {
@@ -26,44 +36,53 @@ const failSet = (object: any, key: string, value: any, orElse: (obj: any) => voi
   }
 };
 
-export default function entries(state: productStateTypeInternal, action: AnyAction): productStateTypeInternal {
+export default function entries(
+  state: productStateTypeInternal,
+  action: AnyAction
+): productStateTypeInternal {
   if (state === undefined) {
-    let persistent = store.get('schema') && store.get('products');
-    return persistent ? {
-      ...defaultProductStateTypeInternal,
-      schema: store.get('schema'),
-      products: store.get('products'),
-    } : {
-      ...defaultProductStateTypeInternal
-    };
+    const persistent = store.get('schema') && store.get('products');
+    return persistent
+      ? {
+          ...defaultProductStateTypeInternal,
+          schema: store.get('schema'),
+          products: store.get('products')
+        }
+      : {
+          ...defaultProductStateTypeInternal
+        };
   }
 
   const workbookToSchema = (roa: any[][]) => {
-    let newSchema: ProductTree = {};
-    let newProducts = [];
-    for (let [accumulator, i] of roa.entries()) {
-      let [name, code, {}, {}, ...category] = i;
+    const newSchema: ProductTree = {};
+    const newProducts = [];
+    for (const [accumulator, i] of roa.entries()) {
+      const [name, code, {}, {}, ...category] = i;
       newProducts.push({
-        name: name,
-        code: code.toString(),
+        name,
+        code: code.toString()
       });
 
       let traverse = newSchema;
-      let fullName = [...category, name];
+      const fullName = [...category, name];
 
-      for (let [index, value] of fullName.entries()) {
+      for (const [index, value] of fullName.entries()) {
         const isFinal = index === category.length;
 
         if (isFinal) {
-          failSet(traverse, "^" + value, accumulator, () => { throw "Invalid XLSX schema. (2)" });
+          failSet(traverse, `^${value}`, accumulator, () => {
+            throw 'Invalid XLSX schema. (2)';
+          });
         } else {
-          failSet(traverse, value, {}, (x) => { if (typeof x === "number") throw "Invalid XLSX schema. (1)" });
-          traverse = (traverse[value] as ProductTree);
+          failSet(traverse, value, {}, x => {
+            if (typeof x === 'number') throw 'Invalid XLSX schema. (1)';
+          });
+          traverse = traverse[value] as ProductTree;
         }
       }
     }
 
-    return {newSchema, newProducts};
+    return { newSchema, newProducts };
   };
 
   switch (action.type) {
@@ -89,14 +108,14 @@ export default function entries(state: productStateTypeInternal, action: AnyActi
       store.set('products', state.products);
       return {
         ...state,
-        upstream: true,
+        upstream: true
       };
     case LOAD:
-      let {newSchema, newProducts} = workbookToSchema(action.value);
+      const { newSchema, newProducts } = workbookToSchema(action.value);
       return {
         ...state,
         schema: newSchema,
-        products: newProducts,
+        products: newProducts
       };
     default:
       return state;

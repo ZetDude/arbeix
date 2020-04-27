@@ -13,7 +13,7 @@ export default function Routes() {
         <Route path={routes.KODU} exact component={HomePage} />
         <Route path={routes.KOOSTA} component={EntryPage} />
         <Route path={routes.TOOTED} component={ProductPage} />
-        <Route render={() => <Redirect to="/"/>}/>
+        <Route render={() => <Redirect to="/" />} />
       </Switch>
     </App>
   );
