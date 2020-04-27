@@ -1,0 +1,24 @@
+.form {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.sidebyside {
+  display:flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+}
+
+.sidebyside > * {
+  padding-right: 5px;
+}
+
+.form .icon {
+  padding: 0 11px 0 6px;
+}
+
+.left {
+  width: 33vw;
+}
+

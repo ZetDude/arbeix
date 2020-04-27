@@ -1,0 +1,23 @@
+.bar {
+  background: #ffffff20;
+  fill-opacity: 0.5;
+  width: 100%;
+  font-family: BebasKai, sans-serif;
+  height: 10vh;
+}
+
+.bar > * {
+  color: #eee;
+  padding-top: .15em;
+  text-align: center;
+  margin: 2vh;
+}
+
+.bar .option {
+  margin-top: 10vh;
+  font-size: 8vh;
+}
+
+.bar .active {
+  color: #fbb;
+}
