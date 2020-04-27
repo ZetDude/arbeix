@@ -18,7 +18,7 @@
     "lint-styles-fix": "yarn --silent lint-styles --fix; exit 0",
     "package": "yarn build && electron-builder build --publish never",
     "package-all": "yarn build && electron-builder build -mwl --publish never",
-    "package-ci": "yarn postinstall && yarn build && electron-builder --publish never",
+    "package-ci": "yarn build && electron-builder build --publish always",
     "package-mac": "yarn build && electron-builder build --mac",
     "package-linux": "yarn build && electron-builder build --linux",
     "package-win": "yarn build && electron-builder build --win --x64",
@@ -90,6 +90,12 @@
         "AppImage"
       ],
       "category": "Development"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "ZetDude",
+      "repo": "arbeix",
+      "private": false
     },
     "directories": {
       "buildResources": "resources",
