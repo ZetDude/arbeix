@@ -1,6 +1,4 @@
-# Arbeix
-
-[![Build Status](https://travis-ci.com/ZetDude/arbeix.svg?branch=master)](https://travis-ci.com/ZetDude/arbeix)
+# Arbeix [![Build Status](https://travis-ci.com/ZetDude/arbeix.svg?branch=master)](https://travis-ci.com/ZetDude/arbeix)
 
 app for [Verx](https://verx.ee)
 

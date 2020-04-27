@@ -1,7 +1,7 @@
 {
   "name": "arbeix",
   "productName": "arbeix",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Verx app",
   "main": "./main.prod.js",
   "author": {

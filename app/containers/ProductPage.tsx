@@ -1,7 +1,14 @@
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import Products from '../components/Products';
-import { categoryInput, commitSchema, createCategory, updateSchema } from '../actions/products';
+import {
+  categoryInput,
+  commitSchema,
+  createCategory,
+  loadFrom,
+  updateAndCommitSchema,
+  updateSchema
+} from '../actions/products';
 import { productStateTypeInternal } from '../reducers/types';
 
 type productStateType = {
@@ -20,6 +27,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
     createCategory,
     updateSchema,
     commitSchema,
+    updateAndCommitSchema,
+    loadFrom,
     },
     dispatch
   );

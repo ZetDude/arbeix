@@ -1,7 +1,7 @@
 {
   "name": "arbeix",
   "productName": "Arbeix",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Verx app",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -266,7 +266,8 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "shortid": "^2.2.15",
-    "source-map-support": "^0.5.16"
+    "source-map-support": "^0.5.16",
+    "xlsx": "^0.15.6"
   },
   "devEngines": {
     "node": ">=7.x",
