@@ -1,7 +1,7 @@
 {
   "name": "arbeix",
   "productName": "Arbeix",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Verx app",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",

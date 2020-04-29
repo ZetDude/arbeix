@@ -11,7 +11,7 @@ export default function Home() {
           <br />
         </span>
         <span>
-          <em>Versioon ω0.3</em>
+          <em>Versioon ω0.4</em>
         </span>
       </div>
     </div>
