@@ -26,18 +26,24 @@
   width: 100%;
 }
 
-.categoryInputContainer {
+.flexible {
   flex:1;
   display: flex;
+}
+
+.bottomArea {
+  flex-direction: column;
+  height: 85vh;
+  margin-top: 4vh;
 }
 
 .topBar {
   width: 100%;
   flex-direction: row;
-  align-items: center;
   display: flex;
 }
 
+.topBar i,
 .topBar input,
 .topBar span {
   margin: 0 10px 15px 0;
@@ -47,8 +53,6 @@
 .topBar form {
   flex: 1;
   display: flex;
+  align-items: center;
 }
 
-.topBar .commit {
-  margin-right: 0;
-}

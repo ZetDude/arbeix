@@ -16,6 +16,7 @@
 .bar .option {
   margin-top: 10vh;
   font-size: 8vh;
+  transition: 100ms all;
 }
 
 .bar .active {

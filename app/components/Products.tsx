@@ -11,8 +11,8 @@ import {
   DisplayedProduct,
   ProductTree
 } from '../reducers/types';
-
-const shortid = require('shortid');
+import { store } from '../reducers/products';
+// import fs from 'fs';
 
 type Props = {
   categoryInput: (value: string) => void;
@@ -21,11 +21,8 @@ type Props = {
   commitSchema: () => void;
   updateAndCommitSchema: (value: ProductTree) => void;
   loadFrom: (value: any) => void;
+  saveTo: (value: any) => void;
   products: productStateTypeInternal;
-};
-
-type AccumulatorContainer = {
-  i: number;
 };
 
 const styles: React.CSSProperties = {
@@ -41,10 +38,8 @@ const replaceWithProduct = (
   products: Product[],
   schema: ProductTree,
   mut: DisplayedProduct[],
-  accumulator: AccumulatorContainer
 ) => {
   for (const i in schema) {
-    accumulator.i++;
     if (schema.hasOwnProperty(i)) {
       const val = schema[i];
       if (typeof val === 'number') {
@@ -56,13 +51,14 @@ const replaceWithProduct = (
         });
       } else {
         const newMut: DisplayedProduct[] = [];
+        let [name, hash] = i.split("#");
         mut.push({
-          name: i,
-          id: `_${accumulator.i}`,
-          display: `(Kategooria) ${i}`,
+          name: name,
+          id: `_${hash}`,
+          display: `(Kategooria) ${name}`,
           children: newMut
         });
-        replaceWithProduct(products, val as ProductTree, newMut, accumulator);
+        replaceWithProduct(products, val as ProductTree, newMut);
       }
     }
   }
@@ -70,20 +66,18 @@ const replaceWithProduct = (
 
 const combineSchema = (products: Product[], schema: ProductTree) => {
   const mutableProducts: DisplayedProduct[] = [];
-  const accumulator: AccumulatorContainer = { i: 0 };
   replaceWithProduct(
     cloneDeep(products),
     cloneDeep(schema),
     mutableProducts,
-    accumulator
   );
   return mutableProducts;
 };
 
 const renderItem = ({
-  item,
-  collapseIcon
-}: {
+                      item,
+                      collapseIcon
+                    }: {
   item: DisplayedProduct;
   collapseIcon: React.ReactElement;
 }) => {
@@ -99,27 +93,48 @@ const confirmChange = ({}, targetParent: DisplayedProduct) => {
   return !targetParent || !(typeof targetParent.id === 'number');
 };
 
-export const safeSet = (object: any, key: string, value: any) => {
-  if (object[key] === undefined) {
-    object[key] = value;
-  } else {
-    object[`${key}#${shortid.generate()}`] = value;
-  }
-};
-
 const replaceWithSchema = (products: DisplayedProduct[], mut: ProductTree) => {
   for (const i in products) {
     if (products.hasOwnProperty(i)) {
       const val = products[i];
       if (val.code !== undefined) {
-        safeSet(mut, val.name, val.id as number);
+        mut[val.name] = val.id as number;
       } else if (val.children !== undefined) {
         const newMut = {};
-        safeSet(mut, val.name, newMut);
+        mut[val.name + "#" + (val.id as string).slice(1)] = newMut;
         replaceWithSchema(val.children, newMut);
       }
     }
   }
+};
+
+const schemaToSpreadsheet = (products: Product[], schema: ProductTree, mut: any[][]) => {
+  for (const [j, i] of products.entries()) {
+    let productRow = [i.name, i.code, i.unit, (i.price === undefined ? undefined : i.price / 100)];
+    let productPath = findVal(schema, j);
+    productRow.push(...(productPath[1] as string[]));
+    mut.push(productRow);
+  }
+  return mut;
+};
+
+const findVal = (object: any, val: any, path?: string[]): [string | undefined, string[]] => {
+  let key: string | undefined = undefined;
+  let fixPath = path !== undefined ? [...path] : [];
+  Object.entries(object).some(function([k, v]) {
+    if (v === val) {
+      key = k;
+      return true;
+    }
+    if (v && typeof v === 'object') {
+      fixPath.push(k.split("#")[0]);
+      [key, fixPath] = (findVal(v, val, fixPath));
+      if (key === undefined) fixPath.pop();
+      return key !== undefined;
+    }
+    return false;
+  });
+  return [key, fixPath];
 };
 
 const clearEmpties = (o: { [vals: string]: any }) => {
@@ -155,9 +170,15 @@ export default function Products(props: Props) {
     updateSchema(mutableSchema);
   };
 
-  const testFileOpen = () => {
-    remote.dialog.showOpenDialog({ properties: ['openFile'] }).then(o => {
-      if (!o.canceled && o.filePaths !== undefined) {
+  const loadExternal = () => {
+    const defaultPath = store.get('filePath', undefined);
+    remote.dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [{ name: 'Excel tabel', extensions: ['xlsx'] }],
+      defaultPath: defaultPath
+    }).then(o => {
+      if (!o.canceled && o.filePaths !== undefined && o.filePaths.length > 0) {
+        store.set('filePath', o.filePaths[0]);
         const workbook = XLSX.readFile(o.filePaths[0]);
         const roa = XLSX.utils.sheet_to_json(
           workbook.Sheets[workbook.SheetNames[0]],
@@ -168,12 +189,38 @@ export default function Products(props: Props) {
     });
   };
 
+  const saveExternal = (externalSchema: ProductTree) => {
+    const defaultPath = store.get('filePath', undefined);
+    remote.dialog.showSaveDialog({
+      filters: [{ name: 'Excel tabel', extensions: ['xlsx'] }],
+      defaultPath: defaultPath
+    }).then(o => {
+      if (!o.canceled && o.filePath !== undefined) {
+        store.set('filePath', o.filePath);
+        const roa = schemaToSpreadsheet(products.products, externalSchema, []);
+        console.log(roa);
+        const worksheet = XLSX.utils.json_to_sheet(
+          roa, { skipHeader: true }
+        );
+        /*
+        let wb = fs.existsSync(o.filePath) ? XLSX.readFile(o.filePath) : XLSX.utils.book_new();
+        let nameCandidate = wb.SheetNames.length > 0 ? wb.SheetNames[0] : "Tooted";
+        if (!wb.SheetNames.includes(nameCandidate)) wb.SheetNames.push(nameCandidate);
+        wb.Sheets[nameCandidate] = worksheet;
+        */
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, worksheet, "Tooted");
+        XLSX.writeFile(wb, o.filePath, {});
+      }
+    });
+  };
+
   return (
-    <>
+    /* FIXME first category add always fails */
+    <div className={style.flexible + ' ' + style.bottomArea}>
       <div className={style.topBar}>
-        /* FIXME first category add always fails */
-        <form onSubmit={createCategory}>
-          <div className={style.categoryInputContainer}>
+        <form>
+          <div className={style.flexible}>
             <input
               type="text"
               placeholder="Kategooria nimi..."
@@ -184,29 +231,37 @@ export default function Products(props: Props) {
               className={style.categoryInput}
             />
           </div>
-          <input type="submit" value="Lisa kategooria" />
+          <i
+            title="Lisa kategooria"
+            className={`fa fa-folder-plus fa-2x`}
+            onClick={createCategory}
+          />
+          {!products.upstream && (
+            <span className={style.warning}>Muudatused salvestamata!</span>
+          )}
+          <i
+            title="Salvesta muudatused"
+            onClick={() => {
+              const temporarySchema = cloneDeep(products.schema);
+              clearEmpties(temporarySchema);
+              saveExternal(temporarySchema);
+              updateAndCommitSchema(temporarySchema);
+            }}
+            className={`fa fa-save fa-2x ${products.upstream ? '' : style.warning}`}
+          />
+          <i
+            title="Lae sisse"
+            onClick={loadExternal}
+            className={`fa fa-file-import fa-2x`}
+          />
         </form>
-        {!products.upstream && (
-          <span className={style.warning}>Muudatused salvestamata!</span>
-        )}
-        <input
-          type="button"
-          value="Salvesta muudatused"
-          onClick={() => {
-            const temporarySchema = cloneDeep(products.schema);
-            clearEmpties(temporarySchema);
-            updateAndCommitSchema(temporarySchema);
-          }}
-          className={style.commit}
-        />
-        <input type="button" value="Lae sisse" onClick={testFileOpen} />
       </div>
-      <Nestable
-        items={displayProducts}
-        renderItem={renderItem}
-        confirmChange={confirmChange}
-        onChange={applyChange}
-      />
-    </>
+        <Nestable
+          items={displayProducts}
+          renderItem={renderItem}
+          confirmChange={confirmChange}
+          onChange={applyChange}
+        />
+    </div>
   );
 }

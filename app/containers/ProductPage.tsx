@@ -6,6 +6,7 @@ import {
   commitSchema,
   createCategory,
   loadFrom,
+  saveTo,
   updateAndCommitSchema,
   updateSchema
 } from '../actions/products';
@@ -29,7 +30,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
       updateSchema,
       commitSchema,
       updateAndCommitSchema,
-      loadFrom
+      loadFrom,
+      saveTo
     },
     dispatch
   );

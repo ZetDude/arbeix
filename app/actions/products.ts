@@ -5,6 +5,7 @@ export const NEW = 'NEW_CATEGORY';
 export const UPDATE = 'UPDATE_SCHEMA';
 export const COMMIT = 'COMMIT_SCHEMA';
 export const LOAD = 'LOAD_XLSX';
+export const SAVE = 'SAVE_XLSX';
 
 export function categoryInput(to: string) {
   return {
@@ -47,4 +48,14 @@ export function loadFrom(external: any) {
     });
     dispatch(commitSchema());
   };
+}
+
+export function saveTo(external: any) {
+  return (dispatch: Dispatch) => {
+    dispatch({
+      type: SAVE,
+      value: external
+    });
+    dispatch(commitSchema());
+  }
 }

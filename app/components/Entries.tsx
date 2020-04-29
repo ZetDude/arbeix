@@ -24,7 +24,7 @@ export default function Entries(props: Props) {
   }
 
   const selectOptions = entries.options.map(i => ({
-    label: i,
+    label: i.split("#")[0],
     value: i
   }));
 
@@ -52,7 +52,7 @@ export default function Entries(props: Props) {
               key={entries.path.slice(-1)[0]}
               onSelect={handleSubmit}
               notFoundText={errors.e101}
-              placeholder={previousCategory}
+              placeholder={previousCategory.split("#")[0]}
             />
           )}
         </div>

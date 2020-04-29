@@ -21,6 +21,8 @@ export const defaultEntryStateTypeInternal: entryStateTypeInternal = {
 export type Product = {
   name: string;
   code: string;
+  unit?: string;
+  price?: number;
   display?: string;
 };
 export type DisplayedProduct = {
@@ -45,13 +47,10 @@ export type productStateTypeInternal = {
 
 export const defaultProductStateTypeInternal: productStateTypeInternal = {
   products: [
-    { name: 'Toode', code: '1' },
-    { name: 'Muu toode', code: '2' },
-    { name: 'Toode', code: '3' }
+    { name: 'VIGA', code: '1' },
   ],
   schema: {
-    'Asjad 1': { Alamkategooria: { 'Muu toode': 1 }, Toode: 0 },
-    'Asjad 2': { Toode: 2 }
+    'VIGA': 0,
   },
   newCategory: '',
   upstream: true

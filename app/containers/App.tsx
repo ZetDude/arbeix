@@ -8,9 +8,9 @@ type Props = {
 export default function App(props: Props) {
   const { children } = props;
   return (
-    <>
+    <main>
       <MenuContainer />
       <div id="appContainer">{children}</div>
-    </>
+    </main>
   );
 }

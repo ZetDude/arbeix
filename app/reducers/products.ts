@@ -6,7 +6,7 @@ import {
   ProductTree
 } from './types';
 import { COMMIT, INPUT, NEW, UPDATE, LOAD } from '../actions/products';
-import { safeSet } from '../components/Products';
+const shortid = require('shortid');
 
 const yaml = require('js-yaml');
 
@@ -36,6 +36,15 @@ const failSet = (
   }
 };
 
+const hashFind = (iter: any, key: string) => {
+  for (let i in iter) {
+    if (iter.hasOwnProperty(i) && i.split("#")[0] === key) {
+      return i;
+    }
+  }
+  return false;
+};
+
 export default function entries(
   state: productStateTypeInternal,
   action: AnyAction
@@ -57,9 +66,9 @@ export default function entries(
     const newSchema: ProductTree = {};
     const newProducts = [];
     for (const [accumulator, i] of roa.entries()) {
-      const [name, code, {}, {}, ...category] = i;
+      const [name, code, unit, price, ...category] = i;
       newProducts.push({
-        name,
+        name, unit, price: ~~(price * 100),
         code: code.toString()
       });
 
@@ -74,10 +83,11 @@ export default function entries(
             throw 'Invalid XLSX schema. (2)';
           });
         } else {
-          failSet(traverse, value, {}, x => {
+          let hashVal = hashFind(traverse, value) || `${value}#${shortid.generate()}`;
+          failSet(traverse, hashVal, {}, x => {
             if (typeof x === 'number') throw 'Invalid XLSX schema. (1)';
           });
-          traverse = traverse[value] as ProductTree;
+          traverse = traverse[hashVal] as ProductTree;
         }
       }
     }
@@ -92,7 +102,7 @@ export default function entries(
         newCategory: action.value
       };
     case NEW:
-      safeSet(state.schema, state.newCategory, {});
+      state.schema[`${state.newCategory}#${shortid.generate()}`] = {};
       return {
         ...state,
         newCategory: ''

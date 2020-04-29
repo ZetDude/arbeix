@@ -18,7 +18,6 @@ export default function Menu(props: Props) {
         let keyname = j[0];
         if (i === menu) {
           classname += ` ${styles.active}`;
-          keyname += '@a';
         }
         return (
           <Link
