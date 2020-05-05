@@ -1,6 +1,6 @@
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { setNamed, setTab } from '../actions/menu';
+import { autoUpdateState, setNamed, setTab } from '../actions/menu';
 import Menu from '../components/Menu';
 import { menuStateTypeInternal } from '../reducers/types';
 
@@ -19,6 +19,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
     {
       setTab,
       setNamed,
+      autoUpdateState,
     },
     dispatch
   );

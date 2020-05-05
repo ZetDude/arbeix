@@ -60,10 +60,12 @@ export const defaultProductStateTypeInternal: productStateTypeInternal = {
 
 export type menuStateTypeInternal = {
   tab: number,
+  autoUpdate: number,
   named?: string,
 }
 
 export const defaultMenuStateTypeInternal: menuStateTypeInternal = {
+  autoUpdate: 0,
   tab: 0,
 };
 
