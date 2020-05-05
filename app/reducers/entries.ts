@@ -6,9 +6,8 @@ import {
   defaultEntryStateTypeInternal,
   entryStateTypeInternal,
   ProductEntry,
-  ProductTree
+  ProductTree, store
 } from './types';
-import { store } from './products';
 
 export default function entries(
   state: entryStateTypeInternal,

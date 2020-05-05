@@ -1,4 +1,6 @@
-import { Dispatch as ReduxDispatch, Store as ReduxStore, Action } from 'redux';
+import { Action, Dispatch as ReduxDispatch } from 'redux';
+import Store from 'electron-store';
+const yaml = require('js-yaml');
 
 export type counterStateType = {
   counter: number;
@@ -56,8 +58,28 @@ export const defaultProductStateTypeInternal: productStateTypeInternal = {
   upstream: true
 };
 
+export type menuStateTypeInternal = {
+  tab: number,
+  named?: string,
+}
+
+export const defaultMenuStateTypeInternal: menuStateTypeInternal = {
+  tab: 0,
+};
+
 export type GetState = () => counterStateType;
 
 export type Dispatch = ReduxDispatch<Action<string>>;
 
-export type Store = ReduxStore<counterStateType, Action<string>>;
+export type StoreContent = {
+  schema: ProductTree,
+  products: Product[],
+  filePath: string,
+}
+
+export const store = new Store<StoreContent>({
+  name: 'arbeix-persistent',
+  fileExtension: 'yaml',
+  serialize: yaml.safeDump,
+  deserialize: yaml.safeLoad
+});

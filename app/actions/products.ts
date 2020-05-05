@@ -1,4 +1,5 @@
 import { Dispatch, ProductTree } from '../reducers/types';
+import { NAMED } from './menu';
 
 export const INPUT = 'CATEGORY_INPUT';
 export const NEW = 'NEW_CATEGORY';
@@ -57,5 +58,12 @@ export function saveTo(external: any) {
       value: external
     });
     dispatch(commitSchema());
+  }
+}
+
+export function setNamedMenu() {
+  return {
+    type: NAMED,
+    value: "DETAILID"
   }
 }

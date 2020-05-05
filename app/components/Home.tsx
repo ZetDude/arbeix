@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Home.css';
+import { _VERSION } from '../constants/version';
 
 export default function Home() {
   return (
@@ -11,7 +12,8 @@ export default function Home() {
           <br />
         </span>
         <span>
-          <em>Versioon ω0.4</em>
+          <em>Versioon {_VERSION}</em>
+          <br />
         </span>
       </div>
     </div>

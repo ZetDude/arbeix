@@ -4,6 +4,15 @@
   width: 100%;
   font-family: BebasKai, sans-serif;
   height: 10vh;
+  flex: 1;
+  flex-flow: row nowrap;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.bar .icon {
+  margin-left: auto;
 }
 
 .bar > * {
@@ -11,14 +20,21 @@
   padding-top: .15em;
   text-align: center;
   margin: 2vh;
+  display: inline-flex;
 }
 
 .bar .option {
-  margin-top: 10vh;
+  margin-top: 0;
+  padding-top: 0;
   font-size: 8vh;
   transition: 100ms all;
 }
 
-.bar .active {
+.bar .active,
+.named {
   color: #fbb;
+}
+
+.named {
+  font-style: italic;
 }

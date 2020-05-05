@@ -1,27 +1,14 @@
 import { AnyAction } from 'redux';
-import Store from 'electron-store';
-import {
-  defaultProductStateTypeInternal,
-  productStateTypeInternal,
-  ProductTree
-} from './types';
-import { COMMIT, INPUT, NEW, UPDATE, LOAD } from '../actions/products';
-const shortid = require('shortid');
+import { defaultProductStateTypeInternal, productStateTypeInternal, ProductTree, store } from './types';
+import { COMMIT, INPUT, LOAD, NEW, UPDATE } from '../actions/products';
 
-const yaml = require('js-yaml');
+const shortid = require('shortid');
 
 type TreeEntry = Tree | number;
 
 interface Tree {
   [extraProps: string]: TreeEntry;
 }
-
-export const store = new Store({
-  name: 'arbeix-persistent',
-  fileExtension: 'yaml',
-  serialize: yaml.safeDump,
-  deserialize: yaml.safeLoad
-});
 
 const failSet = (
   object: any,
@@ -39,7 +26,7 @@ const failSet = (
 const hashFind = (iter: any, key: string) => {
   for (let i in iter) {
     if (iter.hasOwnProperty(i) && i.split("#")[0] === key) {
-      return i;
+      return i; 
     }
   }
   return false;

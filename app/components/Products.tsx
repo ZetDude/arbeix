@@ -2,6 +2,7 @@ import React, { SyntheticEvent } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { remote } from 'electron';
 import XLSX from 'xlsx';
+import routes from '../constants/routes.json';
 // @ts-ignore
 import Nestable from 'react-nestable';
 import style from './Products.css';
@@ -9,9 +10,9 @@ import {
   productStateTypeInternal,
   Product,
   DisplayedProduct,
-  ProductTree
+  ProductTree, store
 } from '../reducers/types';
-import { store } from '../reducers/products';
+import { Link } from 'react-router-dom';
 // import fs from 'fs';
 
 type Props = {
@@ -22,6 +23,7 @@ type Props = {
   updateAndCommitSchema: (value: ProductTree) => void;
   loadFrom: (value: any) => void;
   saveTo: (value: any) => void;
+  setNamedMenu: () => void;
   products: productStateTypeInternal;
 };
 
@@ -37,7 +39,7 @@ const styles: React.CSSProperties = {
 const replaceWithProduct = (
   products: Product[],
   schema: ProductTree,
-  mut: DisplayedProduct[],
+  mut: DisplayedProduct[]
 ) => {
   for (const i in schema) {
     if (schema.hasOwnProperty(i)) {
@@ -51,7 +53,7 @@ const replaceWithProduct = (
         });
       } else {
         const newMut: DisplayedProduct[] = [];
-        let [name, hash] = i.split("#");
+        let [name, hash] = i.split('#');
         mut.push({
           name: name,
           id: `_${hash}`,
@@ -69,24 +71,9 @@ const combineSchema = (products: Product[], schema: ProductTree) => {
   replaceWithProduct(
     cloneDeep(products),
     cloneDeep(schema),
-    mutableProducts,
+    mutableProducts
   );
   return mutableProducts;
-};
-
-const renderItem = ({
-                      item,
-                      collapseIcon
-                    }: {
-  item: DisplayedProduct;
-  collapseIcon: React.ReactElement;
-}) => {
-  return (
-    <div style={styles}>
-      {collapseIcon}
-      {typeof item.id === 'number' ? <b>{item.display}</b> : item.display}
-    </div>
-  );
 };
 
 const confirmChange = ({}, targetParent: DisplayedProduct) => {
@@ -101,7 +88,7 @@ const replaceWithSchema = (products: DisplayedProduct[], mut: ProductTree) => {
         mut[val.name] = val.id as number;
       } else if (val.children !== undefined) {
         const newMut = {};
-        mut[val.name + "#" + (val.id as string).slice(1)] = newMut;
+        mut[val.name + '#' + (val.id as string).slice(1)] = newMut;
         replaceWithSchema(val.children, newMut);
       }
     }
@@ -127,7 +114,7 @@ const findVal = (object: any, val: any, path?: string[]): [string | undefined, s
       return true;
     }
     if (v && typeof v === 'object') {
-      fixPath.push(k.split("#")[0]);
+      fixPath.push(k.split('#')[0]);
       [key, fixPath] = (findVal(v, val, fixPath));
       if (key === undefined) fixPath.pop();
       return key !== undefined;
@@ -158,6 +145,7 @@ export default function Products(props: Props) {
     updateSchema,
     updateAndCommitSchema,
     loadFrom,
+    setNamedMenu,
     products
   } = props;
   const displayProducts = combineSchema(products.products, products.schema);
@@ -174,7 +162,7 @@ export default function Products(props: Props) {
     const defaultPath = store.get('filePath', undefined);
     remote.dialog.showOpenDialog({
       properties: ['openFile'],
-      filters: [{ name: 'Excel tabel', extensions: ['xlsx'] }],
+      filters: [{ name: 'Tabel', extensions: ['ods', 'xlsx', 'xls'] }],
       defaultPath: defaultPath
     }).then(o => {
       if (!o.canceled && o.filePaths !== undefined && o.filePaths.length > 0) {
@@ -192,7 +180,7 @@ export default function Products(props: Props) {
   const saveExternal = (externalSchema: ProductTree) => {
     const defaultPath = store.get('filePath', undefined);
     remote.dialog.showSaveDialog({
-      filters: [{ name: 'Excel tabel', extensions: ['xlsx'] }],
+      filters: [{ name: 'Tabel', extensions: ['ods', 'xls', 'xlsx'] }],
       defaultPath: defaultPath
     }).then(o => {
       if (!o.canceled && o.filePath !== undefined) {
@@ -209,14 +197,41 @@ export default function Products(props: Props) {
         wb.Sheets[nameCandidate] = worksheet;
         */
         let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, worksheet, "Tooted");
+        XLSX.utils.book_append_sheet(wb, worksheet, 'Tooted');
         XLSX.writeFile(wb, o.filePath, {});
       }
     });
   };
 
+  const renderItem = ({
+                        item,
+                        collapseIcon
+                      }: {
+    item: DisplayedProduct;
+    collapseIcon: React.ReactElement;
+  }) => {
+    let isProduct = typeof item.id === 'number';
+    let detailLink = <Link
+      to={routes._DETAIL + item.id.toString()}
+      key={item.id.toString() + '_detail'}
+      onClick={() => setNamedMenu()}
+    >
+      <i
+        title="Detailid"
+        className={`fa fa-edit ${style.icon}`}
+      />
+    </Link>;
+    return (
+      <div style={styles}>
+        {isProduct ? detailLink : collapseIcon}
+        {isProduct ? <b>{item.display}</b> : item.display}
+      </div>
+    );
+  };
+
   return (
     /* FIXME first category add always fails */
+
     <div className={style.flexible + ' ' + style.bottomArea}>
       <div className={style.topBar}>
         <form>
@@ -256,12 +271,12 @@ export default function Products(props: Props) {
           />
         </form>
       </div>
-        <Nestable
-          items={displayProducts}
-          renderItem={renderItem}
-          confirmChange={confirmChange}
-          onChange={applyChange}
-        />
+      <Nestable
+        items={displayProducts}
+        renderItem={renderItem}
+        confirmChange={confirmChange}
+        onChange={applyChange}
+      />
     </div>
   );
 }

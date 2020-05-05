@@ -1,9 +1,18 @@
 import { AnyAction } from 'redux';
-import { SET } from '../actions/menu';
+import { NAMED, SET } from '../actions/menu';
+import { defaultMenuStateTypeInternal } from './types';
 
-export default function counter(state = 0, action: AnyAction) {
+export default function menu(state = defaultMenuStateTypeInternal, action: AnyAction) {
   if (action.type === SET) {
-    return action.value;
+    return {
+      named: undefined,
+      tab: action.value
+    }
+  } else if (action.type === NAMED) {
+    return {
+      tab: -1,
+      named: action.value
+    }
   }
   return state;
 }

@@ -1,5 +1,6 @@
 {
   "KODU": "/",
   "KOOSTA": "/entries",
-  "TOOTED": "/products"
+  "TOOTED": "/products",
+  "_DETAIL": "/detail/"
 }

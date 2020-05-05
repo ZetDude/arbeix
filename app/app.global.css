@@ -8,8 +8,32 @@
 @font-face {
     src:url(media/BebasKai.otf);
     font-family:BebasKai;
-    font-display: swap;
 }
+
+@font-face {
+    font-family: "Andika";
+    src: url("media/AndikaNewBasic-Custom-R.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Andika";
+    src: url("media/AndikaNewBasic-Custom-B.ttf") format("truetype");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Andika";
+    src: url("media/AndikaNewBasic-Custom-I.ttf") format("truetype");
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Andika";
+    src: url("media/AndikaNewBasic-Custom-BI.ttf") format("truetype");
+    font-weight: bold;
+    font-style: italic;
+}
+
 
 body {
   position: relative;
@@ -67,7 +91,7 @@ a:hover {
 /*<editor-fold desc="searchable">*/
 .searchable {
 	 position: relative;
-	 font-family: arial;
+	 font-family: Andika, sans-serif;
 }
  .searchable, .searchable * {
 	 box-sizing: border-box;

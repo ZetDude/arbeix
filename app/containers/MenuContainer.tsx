@@ -1,10 +1,11 @@
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { setTab } from '../actions/menu';
+import { setNamed, setTab } from '../actions/menu';
 import Menu from '../components/Menu';
+import { menuStateTypeInternal } from '../reducers/types';
 
 type menuStateType = {
-  menu: number;
+  menu: menuStateTypeInternal;
 };
 
 function mapStateToProps(state: menuStateType) {
@@ -16,7 +17,8 @@ function mapStateToProps(state: menuStateType) {
 function mapDispatchToProps(dispatch: Dispatch) {
   return bindActionCreators(
     {
-      setTab
+      setTab,
+      setNamed,
     },
     dispatch
   );

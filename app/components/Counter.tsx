@@ -23,7 +23,7 @@ export default function Counter(props: Props) {
   return (
     <div>
       <div className={styles.backButton} data-tid="backButton">
-        <Link to={routes.HOME}>
+        <Link to={routes.KODU}>
           <i className="fa fa-arrow-left fa-3x" />
         </Link>
       </div>
