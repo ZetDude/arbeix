@@ -268,7 +268,7 @@
     "redux-thunk": "^2.3.0",
     "shortid": "^2.2.15",
     "source-map-support": "^0.5.16",
-    "xlsx": "^0.15.6"
+    "xlsx": "^0.17.0"
   },
   "devEngines": {
     "node": ">=7.x",
